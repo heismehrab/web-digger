@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	Timeout               = 2 * time.Second
+	Timeout               = 10 * time.Second
 	DialContextTimeOut    = 30 * time.Second
 	DialContextKeepAlive  = 30 * time.Second
 	MaxIdleConnections    = 100

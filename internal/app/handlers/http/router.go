@@ -39,9 +39,9 @@ func (h *Handler) staticRoutes(r *gin.Engine) {
 // APIRoutes defines HTTP groups endpoints.
 func (h *Handler) APIRoutes(r *gin.Engine) {
 	// Defining groups.
-	v1 := r.Group("v1")
-	analyzerV1 := v1.Group("analyzers")
+	api := r.Group("api")
+	v1 := api.Group("v1")
 
 	// Defining endpoints.
-	analyzerV1.POST("look-up", h.AnalyzeWebPage)
+	v1.POST("analyze-html", h.AnalyzeWebPage)
 }

@@ -1,7 +1,10 @@
 package ports
 
-import "context"
+import (
+	"context"
+	"web-digger/internal/core/domain/models"
+)
 
 type AnalyzerService interface {
-	Analyze(ctx context.Context, URL string) (any, error)
+	Analyze(ctx context.Context, URL string) (*models.AnalyzerResult, error)
 }

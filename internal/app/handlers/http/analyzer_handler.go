@@ -11,6 +11,8 @@ type urlToAnalyzeRequest struct {
 }
 
 type urlToAnalyzeResponse struct {
+	Title   string `json:"title"`
+	Version string `json:"version"`
 }
 
 func (h *Handler) AnalyzeWebPage(c *gin.Context) {
@@ -23,7 +25,7 @@ func (h *Handler) AnalyzeWebPage(c *gin.Context) {
 	}
 
 	// Processing the given URL to obtain its details.
-	_, err := h.WebAnalyzerService.Analyze(c, reqBody.Url)
+	res, err := h.WebAnalyzerService.Analyze(c, reqBody.Url)
 
 	if err != nil {
 		h.logger.LogAPIError(c.Request.RequestURI, err, logger.GetErrorSource(), logger.Detail{
@@ -35,5 +37,8 @@ func (h *Handler) AnalyzeWebPage(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, GetSuccessResponse(urlToAnalyzeResponse{}))
+	c.JSON(http.StatusOK, GetSuccessResponse(urlToAnalyzeResponse{
+		Title:   res.Title,
+		Version: res.Version,
+	}))
 }
