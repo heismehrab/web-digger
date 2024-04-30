@@ -8,6 +8,8 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+var InternalServerError = GetFailedResponseFromMessage("Internal Server Error")
+
 var statues = [...]string{
 	"ok",
 	"fail",
@@ -76,6 +78,7 @@ func GetFailedResponseFromMessage(message string) StandardResponse {
 func GetFailedResponseFromError(err error) StandardResponse {
 	var errMsg []string
 	errMsg = append(errMsg, err.Error())
+
 	return StandardResponse{
 		Status:  Fail,
 		Message: err.Error(),
@@ -86,9 +89,11 @@ func GetFailedResponseFromError(err error) StandardResponse {
 
 func GetFailedResponseFromMessageAndErrors(message string, errors []error) StandardResponse {
 	var errMsg []string
+
 	for _, e := range errors {
 		errMsg = append(errMsg, e.Error())
 	}
+
 	return StandardResponse{
 		Status:  Fail,
 		Message: message,
@@ -100,6 +105,7 @@ func GetFailedResponseFromMessageAndErrors(message string, errors []error) Stand
 func GetFailedValidationResponse(err error) StandardResponse {
 	var errorsList []error
 	var ve validator.ValidationErrors
+
 	if errors.As(err, &ve) {
 		for _, e := range ve {
 			errorsList = append(errorsList, e)

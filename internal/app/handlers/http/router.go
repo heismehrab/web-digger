@@ -2,9 +2,11 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
-	sloggin "github.com/samber/slog-gin"
-	"net/http"
+	"github.com/samber/slog-gin"
+	"os"
 )
+
+const resourcesDir = "/resources/static"
 
 // setupRouter sets list of route to http handler.
 func (h *Handler) setupRouter() *gin.Engine {
@@ -17,9 +19,29 @@ func (h *Handler) setupRouter() *gin.Engine {
 	r.Use(CORSMiddleware())
 	r.Use(sloggin.New(h.logger.Logger))
 
-	r.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusNotFound, gin.H{})
-	})
+	// Define static pages.
+	h.staticRoutes(r)
+
+	// Define API routes.
+	h.APIRoutes(r)
 
 	return r
+}
+
+// staticRoutes defines static routes including web pages.
+func (h *Handler) staticRoutes(r *gin.Engine) {
+	pwd, _ := os.Getwd()
+	staticWebPageAddr := pwd + resourcesDir
+
+	r.Static("/", staticWebPageAddr)
+}
+
+// APIRoutes defines HTTP groups endpoints.
+func (h *Handler) APIRoutes(r *gin.Engine) {
+	// Defining groups.
+	v1 := r.Group("v1")
+	analyzerV1 := v1.Group("analyzers")
+
+	// Defining endpoints.
+	analyzerV1.POST("look-up", h.AnalyzeWebPage)
 }

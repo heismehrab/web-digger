@@ -6,6 +6,7 @@ import (
 	"sync"
 	"web-digger/internal/app/handlers/http"
 	"web-digger/internal/config"
+	"web-digger/internal/core/services"
 	"web-digger/pkg/logger"
 )
 
@@ -30,10 +31,16 @@ func (m *Master) Bootstrap(ctx context.Context, standardLogger *logger.StandardL
 	// Create Logger instance.
 	m.logger = standardLogger
 
+	// Initializing Application services.
+	analyzerService := services.NewAnalyzerService(m.logger)
+
 	// Create Application's HTTP handler.
 	m.restHandler = http.CreateHandler(
 		standardLogger,
 		m.cfg,
+
+		// Please define services here.
+		analyzerService,
 	)
 
 	return nil

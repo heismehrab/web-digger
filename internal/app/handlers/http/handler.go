@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 	"web-digger/internal/config"
+	"web-digger/internal/core/ports"
 	"web-digger/pkg/logger"
 )
 
@@ -22,6 +23,9 @@ type Handler struct {
 	// HTTPServer is the main server object
 	HTTPServer *http.Server
 
+	// Application Services.
+	WebAnalyzerService ports.AnalyzerService
+
 	config config.Config
 	logger *logger.StandardLogger
 }
@@ -30,10 +34,13 @@ type Handler struct {
 func CreateHandler(
 	logger *logger.StandardLogger,
 	config config.Config,
+	WebAnalyzerService ports.AnalyzerService,
 ) *Handler {
 	return &Handler{
 		logger: logger,
 		config: config,
+
+		WebAnalyzerService: WebAnalyzerService,
 	}
 }
 

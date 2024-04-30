@@ -9,16 +9,21 @@ import (
 	"net/http"
 	"testing"
 	"web-digger/internal/config"
+	"web-digger/internal/core/ports"
 	"web-digger/pkg/logger"
 )
 
-func setupHandler(t *testing.T) *Handler {
+func setupHandler(t *testing.T, webAnalyzerService ports.AnalyzerService) *Handler {
 	consoleLogger := logger.CreateLogger(logger.Config{
 		LogLevel:      slog.LevelDebug,
 		GrayLogActive: false,
 	})
 
-	return CreateHandler(consoleLogger, config.Config{})
+	return CreateHandler(
+		consoleLogger,
+		config.Config{},
+		webAnalyzerService,
+	)
 }
 
 func createRequest(t *testing.T, method string, url string, body interface{}, headers map[string]string) *http.Request {
