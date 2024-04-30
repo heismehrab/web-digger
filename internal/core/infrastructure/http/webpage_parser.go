@@ -10,6 +10,7 @@ import (
 
 const contentType = "text/html"
 
+var errUnHealthyURL = errors.New("URL did not show a proper status")
 var errURLFetchFailed = errors.New("failed to fetch URL")
 var errInvalidContentType = errors.New("content type must be 'text/html'")
 
@@ -67,4 +68,27 @@ func (p *PageParser) ParseWebPage(ctx context.Context, url string) (string, erro
 	}
 
 	return string(body), nil
+}
+
+func (p *PageParser) GetWebPageStatus(ctx context.Context, url string) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := p.httpClient.Do(req)
+
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	// Check result's status code.
+	if (res.StatusCode >= http.StatusOK) && (res.StatusCode < http.StatusMultipleChoices) {
+		return nil
+	}
+
+	return errUnHealthyURL
 }
