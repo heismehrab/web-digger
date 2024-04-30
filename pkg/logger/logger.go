@@ -8,6 +8,8 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"runtime"
+	"strconv"
 )
 
 type Detail map[string]interface{}
@@ -96,10 +98,19 @@ func (logger *StandardLogger) InfoF(format string, args ...any) {
 
 func (logger *StandardLogger) FatalF(format string, args ...any) {
 	logger.Error(fmt.Sprintf(format, args...))
-	
+
 	os.Exit(1)
 }
 
 func (logger *StandardLogger) WarnF(format string, args ...any) {
 	logger.Warn(fmt.Sprintf(format, args...))
+}
+
+func GetErrorSource() *ErrorSource {
+	_, file, line, _ := runtime.Caller(1)
+
+	return &ErrorSource{
+		File: file,
+		Line: strconv.Itoa(line),
+	}
 }
