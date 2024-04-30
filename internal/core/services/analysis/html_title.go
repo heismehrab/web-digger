@@ -13,9 +13,15 @@ func (a *AnalyzerService) getHTMLTitle(ctx context.Context, parsedHTMLPage strin
 
 	for {
 		tt := tokenizer.Next()
-		td := tokenizer.Token().Data
+		token := tokenizer.Token().Data
 
-		if tt == html.StartTagToken && td == "title" {
+		if tt == html.ErrorToken {
+			a.result.Title = "failed to fetch page title"
+
+			return
+		}
+
+		if tt == html.StartTagToken && token == "title" {
 			tt = tokenizer.Next()
 
 			if tt == html.TextToken {
@@ -23,12 +29,11 @@ func (a *AnalyzerService) getHTMLTitle(ctx context.Context, parsedHTMLPage strin
 
 				if data != "" {
 					a.result.Title = data
-					break
+
+					return
 				}
 
 			}
-
-			break
 		}
 	}
 }

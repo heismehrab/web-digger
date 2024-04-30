@@ -21,17 +21,17 @@ type AnalyzerService struct {
 
 // NewAnalyzerService Return an instance of Analyzer service.
 func NewAnalyzerService(logger *logger.StandardLogger, pageParser *http.PageParser) *AnalyzerService {
-	result := &models.AnalyzerResult{}
-
 	return &AnalyzerService{
 		logger:     logger,
 		pageParser: pageParser,
-		result:     result,
 	}
 }
 
 // Analyze Tries to parse the page first and then inspect it to fetch required details.
 func (a *AnalyzerService) Analyze(ctx context.Context, url string) (*models.AnalyzerResult, error) {
+	a.result = &models.AnalyzerResult{}
+
+	// Parse URL and fetch its contents.
 	parsedHTMLPage, err := a.pageParser.ParseWebPage(ctx, url)
 
 	if err != nil {
@@ -63,6 +63,8 @@ func (a *AnalyzerService) Analyze(ctx context.Context, url string) (*models.Anal
 	}
 
 	a.getHTMLVersion(ctx, parsedHTMLPage)
+	a.getHTMLTitle(ctx, parsedHTMLPage)
+	a.getHTMLHeadings(ctx, parsedHTMLPage)
 
 	return a.result, nil
 }

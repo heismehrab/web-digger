@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"web-digger/internal/core/domain/models"
 	"web-digger/pkg/logger"
 )
 
@@ -11,8 +12,9 @@ type urlToAnalyzeRequest struct {
 }
 
 type urlToAnalyzeResponse struct {
-	Title   string `json:"title"`
-	Version string `json:"version"`
+	Title   string       `json:"title"`
+	Version string       `json:"version"`
+	HTags   models.HTags `json:"headings"`
 }
 
 func (h *Handler) AnalyzeWebPage(c *gin.Context) {
@@ -40,5 +42,6 @@ func (h *Handler) AnalyzeWebPage(c *gin.Context) {
 	c.JSON(http.StatusOK, GetSuccessResponse(urlToAnalyzeResponse{
 		Title:   res.Title,
 		Version: res.Version,
+		HTags:   res.Hs,
 	}))
 }
