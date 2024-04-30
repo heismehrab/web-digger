@@ -2,25 +2,27 @@ package analysis
 
 import (
 	"context"
-	"errors"
 	"golang.org/x/net/html"
 	"io"
 	"strings"
+	"sync"
+	"time"
 	"web-digger/internal/core/domain/models"
-	"web-digger/internal/core/infrastructure/http"
+	"web-digger/internal/core/ports"
 	"web-digger/pkg/logger"
 )
 
-var ErrHTMLVersionNotFound = errors.New("failed to get HTML version")
-
 type AnalyzerService struct {
 	logger     *logger.StandardLogger
-	pageParser *http.PageParser
+	pageParser ports.ParserAdapter
 	result     *models.AnalyzerResult
+
+	sync.WaitGroup
+	sync.Mutex
 }
 
 // NewAnalyzerService Return an instance of Analyzer service.
-func NewAnalyzerService(logger *logger.StandardLogger, pageParser *http.PageParser) *AnalyzerService {
+func NewAnalyzerService(logger *logger.StandardLogger, pageParser ports.ParserAdapter) *AnalyzerService {
 	return &AnalyzerService{
 		logger:     logger,
 		pageParser: pageParser,
@@ -29,6 +31,7 @@ func NewAnalyzerService(logger *logger.StandardLogger, pageParser *http.PagePars
 
 // Analyze Tries to parse the page first and then inspect it to fetch required details.
 func (a *AnalyzerService) Analyze(ctx context.Context, url string) (*models.AnalyzerResult, error) {
+	allLinksAreProcessed := make(chan bool, 1)
 	a.result = &models.AnalyzerResult{}
 
 	// Parse URL and fetch its contents.
@@ -62,9 +65,25 @@ func (a *AnalyzerService) Analyze(ctx context.Context, url string) (*models.Anal
 		}
 	}
 
-	a.getHTMLVersion(ctx, parsedHTMLPage)
-	a.getHTMLTitle(ctx, parsedHTMLPage)
-	a.getHTMLHeadings(ctx, parsedHTMLPage)
+	a.WaitGroup.Add(1)
+	go a.getHTMLVersion(ctx, parsedHTMLPage)
+
+	a.WaitGroup.Add(1)
+	go a.getHTMLTitle(ctx, parsedHTMLPage)
+
+	a.WaitGroup.Add(1)
+	go a.getHTMLHeadings(ctx, parsedHTMLPage)
+
+	a.WaitGroup.Add(1)
+	go a.getHTMLALinks(ctx, parsedHTMLPage, url, allLinksAreProcessed)
+
+	a.WaitGroup.Add(1)
+	go a.getHTMLALinksStatus(ctx, allLinksAreProcessed)
+
+	// Waiting for goroutines to finish.
+	a.WaitGroup.Wait()
+
+	a.logger.InfoF("all goroutines are done. | time: %d", time.Now().Unix())
 
 	return a.result, nil
 }

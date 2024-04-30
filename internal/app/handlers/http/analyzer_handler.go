@@ -12,9 +12,15 @@ type urlToAnalyzeRequest struct {
 }
 
 type urlToAnalyzeResponse struct {
-	Title   string       `json:"title"`
-	Version string       `json:"version"`
-	HTags   models.HTags `json:"headings"`
+	Title   string `json:"title"`
+	Version string `json:"version"`
+
+	HTags models.HTags `json:"headings"`
+
+	InternalLinks models.Links `json:"internalLinks"`
+	ExternalLinks models.Links `json:"externalLinks"`
+
+	InaccessibleLinks int `json:"inaccessibleLinks"`
 }
 
 func (h *Handler) AnalyzeWebPage(c *gin.Context) {
@@ -40,8 +46,11 @@ func (h *Handler) AnalyzeWebPage(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, GetSuccessResponse(urlToAnalyzeResponse{
-		Title:   res.Title,
-		Version: res.Version,
-		HTags:   res.Hs,
+		Title:             res.Title,
+		Version:           res.Version,
+		HTags:             res.Hs,
+		InternalLinks:     res.InternalLinks,
+		ExternalLinks:     res.ExternalLinks,
+		InaccessibleLinks: res.InaccessibleLinks,
 	}))
 }
