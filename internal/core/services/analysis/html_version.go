@@ -4,6 +4,7 @@ import (
 	"context"
 	"golang.org/x/net/html"
 	"strings"
+	"time"
 )
 
 type htmlVersions struct {
@@ -13,6 +14,8 @@ type htmlVersions struct {
 // getHTMLVersion Indicates the version of HTML page
 // via finding html.DoctypeToken in given tokens.
 func (a *AnalyzerService) getHTMLVersion(ctx context.Context, parsedHTMLPage string) {
+	a.logger.InfoF("start getting HTML version | time: %d", time.Now().Unix())
+
 	tokenizer := html.NewTokenizer(strings.NewReader(parsedHTMLPage))
 
 	for {
@@ -40,6 +43,7 @@ func (a *AnalyzerService) getHTMLVersion(ctx context.Context, parsedHTMLPage str
 
 			if ok {
 				a.result.Version = d.version
+				a.WaitGroup.Done()
 
 				return
 			}

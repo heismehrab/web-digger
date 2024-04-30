@@ -4,11 +4,14 @@ import (
 	"context"
 	"golang.org/x/net/html"
 	"strings"
+	"time"
 )
 
-// getHTMLVersion finds the title of HTML page
+// getHTMLTitle finds the title of HTML page
 // via finding html.StartTagToken and html.TextToken in given tokens.
 func (a *AnalyzerService) getHTMLTitle(ctx context.Context, parsedHTMLPage string) {
+	a.logger.InfoF("start getting HTML title | time: %d", time.Now().Unix())
+
 	tokenizer := html.NewTokenizer(strings.NewReader(parsedHTMLPage))
 
 	for {
@@ -17,6 +20,7 @@ func (a *AnalyzerService) getHTMLTitle(ctx context.Context, parsedHTMLPage strin
 
 		if tt == html.ErrorToken {
 			a.result.Title = "failed to fetch page title"
+			a.WaitGroup.Done()
 
 			return
 		}
@@ -29,6 +33,7 @@ func (a *AnalyzerService) getHTMLTitle(ctx context.Context, parsedHTMLPage strin
 
 				if data != "" {
 					a.result.Title = data
+					a.WaitGroup.Done()
 
 					return
 				}

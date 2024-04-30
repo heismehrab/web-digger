@@ -4,12 +4,15 @@ import (
 	"context"
 	"golang.org/x/net/html"
 	"strings"
+	"time"
 	"web-digger/internal/core/domain/models"
 )
 
 // getHTMLHeadings finds the h tags of HTML page
 // via finding html.StartTagToken
 func (a *AnalyzerService) getHTMLHeadings(ctx context.Context, parsedHTMLPage string) {
+	a.logger.InfoF("start getting HTML H tags | time: %d", time.Now().Unix())
+
 	tokenizer := html.NewTokenizer(strings.NewReader(parsedHTMLPage))
 
 	tags := models.HTags{
@@ -49,4 +52,5 @@ func (a *AnalyzerService) getHTMLHeadings(ctx context.Context, parsedHTMLPage st
 	}
 
 	a.result.Hs = tags
+	a.WaitGroup.Done()
 }
