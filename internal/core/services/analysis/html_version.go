@@ -22,7 +22,7 @@ func (a *AnalyzerService) getHTMLVersion(ctx context.Context, parsedHTMLPage str
 		tt := tokenizer.Next()
 
 		if tt != html.DoctypeToken {
-			continue
+			return
 		}
 
 		docTypes := [8]htmlVersions{

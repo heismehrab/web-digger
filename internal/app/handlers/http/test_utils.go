@@ -46,6 +46,12 @@ func createRequest(t *testing.T, method string, url string, body interface{}, he
 		reader,
 	)
 
+	if headers != nil {
+		for k, v := range headers {
+			req.Header.Set(k, v)
+		}
+	}
+
 	if err != nil {
 		t.Fatalf("failed to create request with error: %s", err.Error())
 	}

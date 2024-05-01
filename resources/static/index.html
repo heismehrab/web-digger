@@ -1,91 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Welcome to Detective!</title>
-    <meta name="description" content="A basic form">
-    <meta name="author" content="Ludwig Stumpp">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <script src="js/app.js"></script>
-    <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>web digger</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            text-align: center;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        #response {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #error {
+            color: #ff0000;
+            font-weight: bold;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#urlForm").submit(function (event) {
+                // Prevent default form submission
+                event.preventDefault();
+
+                // Get the URL entered by the user
+                var url = $("#urlInput").val();
+
+                // Send AJAX request with JSON body
+                $.ajax({
+                    type: "POST",
+                    url: "/api/v1/analyze-html",
+                    contentType: "application/json",
+                    data: JSON.stringify({url: url}),
+                    success: function (response) {
+                        // Process the response
+                        $("#response").html("<pre>" + JSON.stringify(response, null, 4) + "</pre>");
+                        $("#error").hide(); // Hide error message if success
+                    },
+                    error: function (response) {
+                        var res = JSON.parse(response.responseText)
+                        var message = res.message + ": " +  res.errors[0]
+                        // Handle errors
+                        $("#response").html("<pre>" + message + "</pre>"); // Clear previous response
+                        //$("#error").text("Error fetching URL: " +  message).show(); // Display error message
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
-<div class="container-fluid col-md-6 col-md-offset-3">
-    <form class="form-group" id="my-form" onsubmit="return false">
-        <div>
-            <label for="url">Please Enter URL</label>
-            <input type="text" class="form-control" id="url" placeholder="e.g. https://www.google.com" name="url" required>
-            <br>
-            <button class="submit-button form-control btn btn-info" type="submit" value="Submit">Submit</button>
-            <div id="lock-modal"></div>
-            <div class="modal-content" id="loading-circle"></div>
-        </div>
+<div class="container">
+    <h1>Web Digger</h1>
+    <form id="urlForm">
+        <label for="urlInput">Enter URL:</label>
+        <input type="text" id="urlInput" name="urlInput">
+        <button type="submit">Inspect</button>
     </form>
-    <div class="container alert" id="alert">
-        <strong id="alert_message"></strong>
-    </div>
-</div>
-
-<div class="container col-md-8 col-md-offset-2 " style="margin-bottom: auto">
-    <div class="row">
-        <div id="result_table" style="display: none;" class="table-responsive col-md-12 ">
-            <table class="table table-secondary table-striped">
-                <thead>
-                <tr>
-                    <th scope="col">HTML Version</th>
-                    <td><strong id="html-version"></strong></td>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <th scope="row">Page Title</th>
-                    <td><strong id="page-title"></strong></td>
-                </tr>
-                <tr>
-                    <th scope="row">External Links</th>
-                    <td><strong id="external-links"></strong></td>
-                </tr>
-                <tr>
-                    <th scope="row">Internal Links</th>
-                    <td><strong id="internal-links"></strong></td>
-                </tr>
-                <tr>
-                    <th scope="row">Inaccessible Links</th>
-                    <td><strong id="inaccessible-links"></strong></td>
-                </tr>
-                <tr>
-                    <th scope="row">Has Login Form</th>
-                    <td><strong id="has-login"></strong></td>
-
-                <tr>
-                    <th scope="row">H1 Headings Count</th>
-                    <td><strong id="headings-count-h1"></strong></td>
-                </tr>
-                <tr>
-                    <th scope="row">H2 Headings Count</th>
-                    <td><strong id="headings-count-h2"></strong></td>
-                </tr>
-                <tr>
-                    <th scope="row">H3 Headings Count</th>
-                    <td><strong id="headings-count-h3"></strong></td>
-                </tr>
-                <tr>
-                    <th scope="row">H4 Headings Count</th>
-                    <td><strong id="headings-count-h4"></strong></td>
-                </tr>
-                <tr>
-                    <th scope="row">H5 Headings Count</th>
-                    <td><strong id="headings-count-h5"></strong></td>
-                </tr>
-                <tr>
-                    <th scope="row">H6 Headings Count</th>
-                    <td><strong id="headings-count-h6"></strong></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <div id="error" style="display: none;"></div>
+    <div id="response"></div>
 </div>
 </body>
 </html>
