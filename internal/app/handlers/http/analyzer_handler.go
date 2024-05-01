@@ -12,15 +12,13 @@ type urlToAnalyzeRequest struct {
 }
 
 type urlToAnalyzeResponse struct {
-	Title   string `json:"title"`
-	Version string `json:"version"`
-
-	HTags models.HTags `json:"headings"`
-
-	InternalLinks models.Links `json:"internalLinks"`
-	ExternalLinks models.Links `json:"externalLinks"`
-
-	InaccessibleLinks int `json:"inaccessibleLinks"`
+	Title             string       `json:"title"`
+	Version           string       `json:"version"`
+	HTags             models.HTags `json:"headings"`
+	InternalLinks     models.Links `json:"internalLinks"`
+	ExternalLinks     models.Links `json:"externalLinks"`
+	InaccessibleLinks int          `json:"inaccessibleLinks"`
+	HasLoginForm      bool         `json:"hasLoginForm"`
 }
 
 func (h *Handler) AnalyzeWebPage(c *gin.Context) {
@@ -52,5 +50,6 @@ func (h *Handler) AnalyzeWebPage(c *gin.Context) {
 		InternalLinks:     res.InternalLinks,
 		ExternalLinks:     res.ExternalLinks,
 		InaccessibleLinks: res.InaccessibleLinks,
+		HasLoginForm:      res.HasLoginForm,
 	}))
 }

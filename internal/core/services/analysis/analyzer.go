@@ -75,6 +75,9 @@ func (a *AnalyzerService) Analyze(ctx context.Context, url string) (*models.Anal
 	go a.getHTMLHeadings(ctx, parsedHTMLPage)
 
 	a.WaitGroup.Add(1)
+	go a.containsLoginForm(ctx, parsedHTMLPage)
+
+	a.WaitGroup.Add(1)
 	go a.getHTMLALinks(ctx, parsedHTMLPage, url, allLinksAreProcessed)
 
 	a.WaitGroup.Add(1)

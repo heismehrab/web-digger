@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	Timeout               = 10 * time.Second
+	LongTimeout           = 10 * time.Second
+	NormalTimeout         = 2 * time.Second
 	DialContextTimeOut    = 30 * time.Second
 	DialContextKeepAlive  = 30 * time.Second
 	MaxIdleConnections    = 100
@@ -27,15 +28,15 @@ func WithHTTPClient(httpClient *http.Client) Option {
 	}
 }
 
-func WithHTTPTimeOut(timeOut int) Option {
+func WithHTTPTimeOut(timeOut time.Duration) Option {
 	return func(provider *PageParser) {
-		provider.httpClient.Timeout = time.Duration(timeOut) * time.Second
+		provider.httpClient.Timeout = timeOut
 	}
 }
 
 func getDefaultHTTPClient() *http.Client {
 	return &http.Client{
-		Timeout: Timeout,
+		Timeout: NormalTimeout,
 		Transport: &http.Transport{
 			Proxy: http.ProxyFromEnvironment,
 			DialContext: (&net.Dialer{

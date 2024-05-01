@@ -35,7 +35,7 @@ func (m *Master) Bootstrap(ctx context.Context, standardLogger *logger.StandardL
 	// Initializing Application services.
 	analyzerService := analysis.NewAnalyzerService(
 		m.logger,
-		PageParser.NewPageParser(),
+		PageParser.NewPageParser(PageParser.WithHTTPTimeOut(PageParser.LongTimeout)),
 	)
 
 	// Create Application's HTTP handler.

@@ -10,4 +10,5 @@ type AnalyzerResult struct {
 	InternalLinks     Links
 	ExternalLinks     Links
 	InaccessibleLinks int
+	HasLoginForm      bool
 }
