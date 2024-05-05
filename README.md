@@ -24,7 +24,21 @@ make up
 go run main.go
 ```
 
+Now the Application can be reached on:
+```
+localhost:8000
+```
+
 ## Improvements that can be pointed at.
 
 It would be better to cache responses according to URL addresses. It is apparent that processing and health checking modern huge web pages require noticeable amount of resources. for This case, personally, I think providing a driven adapter for using cache databases can be helpful.
 Therefore, writing test cases in each layer as it is possible is always welcomed. For example, writing test cases for pkg layers can assure higher level of code coverage or other places with same situation too.
+
+## Changes at 2024-05-05
+There were some improvement that are done for better user experience:
+* A loading icon for index page when submitting a request. This loading continues until the application responds.
+
+Also, some changes have been added on server side:
+* comments were added to methods to describe their functionality.
+* Some Unnecessary logs on console were removed.
+* A new variable is added to specify HTTP client's timeout in second.
