@@ -35,6 +35,8 @@ It would be better to cache responses according to URL addresses. It is apparent
 Therefore, writing test cases in each layer as it is possible is always welcomed. For example, writing test cases for pkg layers can assure higher level of code coverage or other places with same situation too.
 
 ## Changes at 2024-05-05
+[This merge-request](https://github.com/heismehrab/web-digger/tree/refactor/improvment-of-index-page-and-loggings) contains the following changes which can be applied to main code base.
+
 There were some improvement that are done for better user experience:
 * A loading icon for index page when submitting a request. This loading continues until the application responds.
 
