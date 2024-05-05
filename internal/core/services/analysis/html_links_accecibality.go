@@ -59,8 +59,6 @@ func (a *AnalyzerService) getHTMLALinksStatus(ctx context.Context, allLinksArePr
 // checkLinkStatus Checks the health of a single link with the help of a third party package
 // and updates its struct if the link is unhealthy.
 func (a *AnalyzerService) checkLinkStatus(ctx context.Context, link string) error {
-	a.logger.InfoF("start getting link status | time: %d", time.Now().Unix())
-
 	err := a.pageParser.GetWebPageStatus(ctx, link)
 
 	if err != nil {

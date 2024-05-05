@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>web digger</title>
+    <title>URL Fetcher</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -70,6 +70,31 @@
             color: #ff0000;
             font-weight: bold;
         }
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Added style for invalid input */
+        input.invalid {
+            border-color: red;
+        }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
@@ -78,26 +103,46 @@
                 // Prevent default form submission
                 event.preventDefault();
 
+                // Clear previous response
+                $("#response").html("");
+                $("#error").hide();
+
+                // Show loading indicator
+                $("#loading").show();
+
                 // Get the URL entered by the user
                 var url = $("#urlInput").val();
+                var urlRegex = /^(https?):\/\/[^\s/$.?#].[^\s]*$/;
+
+                if (!urlRegex.test(url)) {
+                    $("#loading").hide();
+                    $("#error").text("Invalid URL format").show();
+
+                    return; // Stop further processing
+                }
 
                 // Send AJAX request with JSON body
                 $.ajax({
                     type: "POST",
                     url: "/api/v1/analyze-html",
                     contentType: "application/json",
-                    data: JSON.stringify({url: url}),
+                    data: JSON.stringify({ url: url }),
                     success: function (response) {
+                        // Hide loading indicator
+                        $("#loading").hide();
+
                         // Process the response
                         $("#response").html("<pre>" + JSON.stringify(response, null, 4) + "</pre>");
-                        $("#error").hide(); // Hide error message if success
                     },
                     error: function (response) {
+                        // Hide loading indicator
+                        $("#loading").hide();
+
                         var res = JSON.parse(response.responseText)
                         var message = res.message + ": " +  res.errors[0]
-                        // Handle errors
-                        $("#response").html("<pre>" + message + "</pre>"); // Clear previous response
-                        //$("#error").text("Error fetching URL: " +  message).show(); // Display error message
+
+                        // Display error message
+                        $("#error").text("Error fetching URL: " + message).show();
                     }
                 });
             });
@@ -108,10 +153,14 @@
 <div class="container">
     <h1>Web Digger</h1>
     <form id="urlForm">
-        <label for="urlInput">Enter URL:</label>
+        <label for="urlInput">Enter HTTPS URL:</label>
         <input type="text" id="urlInput" name="urlInput">
         <button type="submit">Inspect</button>
     </form>
+    <div id="loading">
+        <div class="loader"></div>
+        <p>Loading...</p>
+    </div>
     <div id="error" style="display: none;"></div>
     <div id="response"></div>
 </div>

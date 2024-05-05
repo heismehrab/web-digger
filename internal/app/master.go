@@ -26,16 +26,15 @@ func NewInstance(cfg config.Config) *Master {
 	}
 }
 
+// Bootstrap binds the Application dependencies and services.
 func (m *Master) Bootstrap(ctx context.Context, standardLogger *logger.StandardLogger) error {
-	// Initiate services, dependencies, etc...
-
 	// Create Logger instance.
 	m.logger = standardLogger
 
 	// Initializing Application services.
 	analyzerService := analysis.NewAnalyzerService(
 		m.logger,
-		PageParser.NewPageParser(PageParser.WithHTTPTimeOut(PageParser.LongTimeout)),
+		PageParser.NewPageParser(PageParser.WithHTTPTimeOut(m.cfg.App.HTTPClientTimeout)),
 	)
 
 	// Create Application's HTTP handler.

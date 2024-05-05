@@ -2,6 +2,7 @@ package config
 
 import (
 	"log/slog"
+	"time"
 	"web-digger/pkg/logger"
 )
 
@@ -12,6 +13,9 @@ type Config struct {
 
 type AppSettings struct {
 	Port int `mapstructure:"APP_PORT"`
+
+	// Setting default value seems not possible when using `mapstructure` tags.
+	HTTPClientTimeout time.Duration `mapstructure:"HTTP_CLIENT_TIMEOUT"`
 }
 
 type Logger struct {

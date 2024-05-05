@@ -70,6 +70,8 @@ func (p *PageParser) ParseWebPage(ctx context.Context, url string) (string, erro
 	return string(body), nil
 }
 
+// GetWebPageStatus calls the given url and reports it as healthy if the response
+// meets its considered statuses.
 func (p *PageParser) GetWebPageStatus(ctx context.Context, url string) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 
